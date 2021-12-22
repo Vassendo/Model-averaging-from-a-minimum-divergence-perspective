@@ -164,7 +164,7 @@ aic <- function(fitted_models, num_data){
   return(aic_scores)
 }
 
-#Calculates AIC-based prior
+#Calculates corrected AIC estimates of model optimism (can be used as model priors)
 aic_prior <- function(fitted_models, num_data){
   num_models <- length(fitted_models)
   prior <- rep(0, num_models)
@@ -172,8 +172,6 @@ aic_prior <- function(fitted_models, num_data){
     prior[i] <- length(fitted_models[[i]]$coefficients)
   }
   prior <- prior + prior*(prior + 1)/(num_data - prior -1)
-  prior <- exp(-prior)
-  prior <- prior/sum(prior)
   return(prior)
 }
 
@@ -190,3 +188,11 @@ fitmodel_predictions <- function(fitmodel_list, model_probabilities, test_data){
   } 
   return(final_predictions)
 }
+
+#Calculates capped log scores. This function makes sure that the log score does not return infinite scores
+capped.log <- function(x){
+  if(log(x) < -34.53958){
+    return(-34.53958)} else {
+      return(log(x))
+    }
+} 
